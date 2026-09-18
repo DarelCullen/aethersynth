@@ -10,7 +10,24 @@ import { PluginRackView } from './components/PluginRackView';
 export const App: React.FC = () => {
   const engine = useMemo(() => AudioEngine.getInstance(), []);
 
-  const [activeTab, setActiveTab] = useState<'arranger' | 'synth-lab' | 'drum-machine' | 'plugin-rack'>('arranger');
+  const getInitialTab = (): 'arranger' | 'synth-lab' | 'drum-machine' | 'plugin-rack' => {
+    const hash = window.location.hash.replace('#', '');
+    if (['arranger', 'synth-lab', 'drum-machine', 'plugin-rack'].includes(hash)) {
+      return hash as any;
+    }
+    const param = new URLSearchParams(window.location.search).get('tab');
+    if (param && ['arranger', 'synth-lab', 'drum-machine', 'plugin-rack'].includes(param)) {
+      return param as any;
+    }
+    return 'arranger';
+  };
+
+  const [activeTab, setActiveTabState] = useState<'arranger' | 'synth-lab' | 'drum-machine' | 'plugin-rack'>(getInitialTab);
+
+  const setActiveTab = (tab: 'arranger' | 'synth-lab' | 'drum-machine' | 'plugin-rack') => {
+    setActiveTabState(tab);
+    window.location.hash = tab;
+  };
   const [isPlaying, setIsPlaying] = useState(false);
   const [isAudioReady, setIsAudioReady] = useState(false);
 
